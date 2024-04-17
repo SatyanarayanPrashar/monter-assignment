@@ -28,11 +28,12 @@ export const FilterView = () => {
 
     const fetchContent = async (pgNumber: number, pgSize: number) => {
         setLoading(true);
-        const url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=5b9496671e244ce6990752f8138f18bb&page=${pgNumber}&pageSize=${pgSize}`;
+        // const url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=5b9496671e244ce6990752f8138f18bb&page=${pgNumber}&pageSize=${pgSize}`;
+        const url = `https://jsonplaceholder.typicode.com/posts?_page=${pgNumber}&_limit=${pgSize}`;
 
         try {
             const response = await axios.get(url);
-            setContent(response.data.articles)
+            setContent(response.data)
             setLoading(false);
         } catch (error) {
             console.error('Error fetching initial data:', error);
