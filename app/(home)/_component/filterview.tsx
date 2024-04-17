@@ -4,24 +4,19 @@ import { cn } from "@/lib/utils";
 import axios from "axios";
 import { ChevronDown, ChevronFirst, ChevronLast, FileDownIcon, Filter, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useMediaQuery } from "usehooks-ts";
 
-interface Article {
-    source: { id: string; name: string };
-    author: string | null;
+interface Report {
     title: string;
-    description: string;
-    url: string;
-    urlToImage: string;
-    publishedAt: string;
-    content: string;
-  }
+}
 
 export const FilterView = () => {
-    const [content, setContent] = useState<Article[]>([]);
+    const [content, setContent] = useState<Report[]>([]);
     const [loading, setLoading] = useState(false);
     const [pgNumber, setPgNumber] = useState(1);
-    const [pgSize, setPgSize] = useState(3);
-    const [dropDownVisible, setDropDownVisibility] = useState(false)
+    const [pgSize, setPgSize] = useState(6);
+    const [dropDownVisible, setDropDownVisibility] = useState(false);
+    const isMobile = useMediaQuery("(max-width: 768px)");
     
     useEffect(() => {
         if (!pgSize && !pgNumber) {
@@ -67,33 +62,37 @@ export const FilterView = () => {
     };
 
     return (
-        <div className="border-[1px] rounded-xl w-[70%] text-[#757575]">
-            <div className="flex justify-between my-5 mx-7">
-                <div></div>
+        <div className={cn("border-[1px] rounded-xl w-[70%] text-[#757575]", isMobile && "w-[100%] mx-[20px]")}>
+            <div className={cn("flex justify-between my-5 mx-7", " mx-1")}>
+                <div className={isMobile ? "hidden" : " block"}></div>
                 <h2 className="text-[19.7px] font-[600] ">Recently Generated Reports</h2>
-                <div className="flex gap-2">
+                <div className={cn("flex gap-2 mr-7", isMobile && "mr-0")}>
                     <Filter className="border-[2px] h-[28px] w-[28px] border-[#757575] rounded-lg p-[3px] bg-transparent"/>
                     <X className="border-[2px] h-[28px] w-[28px] border-[#757575] rounded-lg p-[3px] bg-transparent"/>
                 </div>
             </div>
 
-            <div className="bg-slate-100 flex mt-4 text-[16px] font-[500] py-1">
-                <p className="w-[12rem] ml-7">Date</p>
-                <p className="w-[50rem]">Report</p>
-                <p className="mr-7">Download</p>
+            <div className={"bg-slate-100 flex mt-4 text-[15px] font-[500] py-1"}>
+                <p className={cn("w-[12rem] ml-7", isMobile && "ml-1 mr-[35px]")}>Date</p>
+                <p className={cn("w-[57rem]", isMobile && "w-[50rem]")}>Report</p>
+                <p className={cn("mr-7", isMobile && "mr-1")}>Download</p>
             </div>
+
             <div className="h-[60vh] border-b-[1px]">
-                {loading ? <p>Loading...</p> : (
-                    <div className="h-[60vh] border-b-[1px] text-[16px] flex flex-col overflow-y-auto">
-                        {content.map((article, index) => (
+                {loading ? (
+                    <div className="h-full flex items-center justify-center">
+                        <p>Loading...</p>
+                    </div>
+                ) : (
+                    <div className="h-[60vh] border-b-[1px] text-[15px] flex flex-col overflow-y-auto">
+                        {content.map((report, index) => (
                             <div className="flex font-[500] pt-5">
-                                <div className="w-[12rem] ml-7">
+                                <div className={cn("w-[12rem] ml-7", isMobile && "w-[5rem] ml-1 mr-[20px]")}>
                                     <p>22.07.2021</p>
                                     <p className="text-[13px]">16:02 PM</p>
                                 </div>
-                                {/* <p className="w-[50rem]">APP_URL_USAGE_(Exclude_Half_Days)_3_6_2021_3_31_2021.csv</p> */}
-                                <p className="w-[50rem]  mr-[7rem]">{article.title}</p>
-                                <FileDownIcon className="mr-[3.4rem]" size={28}/> 
+                                <p className={cn("w-[50rem] mr-[7rem] overflow-hidden whitespace-nowrap overflow-ellipsis", isMobile && "w-[20rem] mr-[3rem]")}>{report.title}</p>
+                                <FileDownIcon className={cn("mr-[3.4rem] h-[28px] w-[28px]", isMobile && "mr-5")} /> 
                             </div>
                         ))}
                         {loading && <p>Loading...</p>}
@@ -101,8 +100,10 @@ export const FilterView = () => {
                 )}
             </div>
 
-            <div className="flex py-4 gap-2 text-[15px] justify-center items-center">
-                
+            <div className={cn(
+                "flex py-4 gap-2 text-[15px] justify-center items-center",
+                isMobile && "flex flex-col"
+            )}>
                 <div className="flex py-4 gap-2 text-[15px] justify-center items-center">
                     <button className="flex gap-1 items-center" role="button" onClick={() => handlePageChange(pgNumber - 1)} disabled={pgNumber - 1 < 1}>
                         <ChevronFirst />
@@ -117,13 +118,13 @@ export const FilterView = () => {
 
                 <div className="flex ml-10 gap-2 items-center" role="button" onClick={() => setDropDownVisibility(!dropDownVisible)}>
                     <p>Rows per page</p>
-                    <div className={`flex border-[1px] rounded-lg py-[3px] px-2 items-center`}>
+                    <div className="flex border-[1px] rounded-lg py-[3px] px-2 items-center">
                         {dropDownVisible && (
-                            <div className="flex flex-col absolute bg-white border rounded-lg mt-2">
-                                {[...Array(10)].map((_, index) => (
+                            <div className="flex flex-col absolute bg-white border rounded-lg ml-[-8.5px]">
+                                {[...Array(9)].map((_, index) => (
                                     <div
                                         key={index}
-                                        className={`py-2 px-4 cursor-pointer ${pgSize === index + 1 ? 'bg-purple-500 text-white' : ''}`}
+                                        className={`py-2 px-4 cursor-pointer ${pgSize === index + 1 ? 'bg-orange-500 text-white' : ''}`}
                                         onClick={() => handleSelectPageSize(index + 1)}
                                     >
                                         {index + 1}
